@@ -1,4 +1,6 @@
-import Stemmer from "./Stemmer";
+// forked and modified from https://github.com/NaturalNode/natural/blob/master/lib/natural/stemmers/lancaster_stemmer.js
+
+import Stemmer from "./stemmer";
 import ruleTable from './lancaster_rules';
 
 type rule = {
@@ -14,15 +16,20 @@ type ruleSet = rule[];
 class LancasterStemmer extends Stemmer {
     constructor() {
         super();
+        /**
+         * overwrite existing base stem method with lancaster rules.
+         * used in Stemmer.tokenizeAndStem
+         */
         this.stem = LancasterStemmer.stem;
     }
 
-    static applyRules(token: string, intact) {
-        console.log(token)
-        const section = token[token.length - 1]
+    /**
+     * Traverse a token (word) from right to left fashion trying to stem it (Reduce it to the base form)
+     */
+    static applyRules(token: string, intact: boolean): string {
+        const section = token[token.length - 1]; // last character of the token
         const rules: ruleSet = ruleTable[section];
 
-        // console.log(section)
 
         if (rules) {
             for (let i = 0; i < rules.length; i++) {
@@ -30,7 +37,6 @@ class LancasterStemmer extends Stemmer {
                 if ((intact || !rules[i].intact) &&
                     // only apply intact rules to intact tokens
                     token.substring(token.length - pattern.length, token.length) === rules[i].pattern) {
-                    //console.log(token.substr(0 - rules[i].pattern.length))
                     // hack off only as much as the rule indicates
                     let result = token.substring(0, token.length - parseInt(rules[i].size))
 
@@ -59,6 +65,9 @@ class LancasterStemmer extends Stemmer {
         return token;
     }
 
+    /**
+     * Override base class stem method
+     */
     static stem(token: string) {
         return LancasterStemmer.applyRules(token.toLowerCase(), true);
     }
