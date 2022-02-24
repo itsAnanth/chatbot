@@ -32,15 +32,13 @@ class Stemmer {
         const tokens = new Tokenizer().tokenize(lowerCase);
         const len = tokens.length;
 
-        if (keepStops) {
-            for (let i = 0; i < len; i++) 
-                stemmedTokens.push(this.stem(tokens[i]));
-        } else {
-            for (let i = 0; i < len; i++) {
-                if (stopwords.indexOf(tokens[i]) === -1)
-                    stemmedTokens.push(this.stem(tokens[i]));
-            }
+
+        for (let i = 0; i < len; i++) {
+            if (keepStops && stopwords.indexOf(tokens[i]) !== -1)
+                continue;
+            stemmedTokens.push(this.stem(tokens[i]));
         }
+
 
         return stemmedTokens;
     }
