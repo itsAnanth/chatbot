@@ -1,10 +1,29 @@
-import stopwords from '../../utils/stopwords';
+import { words as stopwords } from '../../utils/stopwords';
 import Tokenizer from '../tokenizers/agressive_tokenizer';
 
 class Stemmer {
 
-    stem(token) {
+    stem(token: string) {
         return token;
+    }
+
+    addStopWord(word: string) {
+        stopwords.push(word);
+    }
+
+    addStopWords(words: string[]) {
+        stopwords.push(...words);
+    }
+
+    removeStopWord(word: string) {
+        this.removeStopWords([word]);
+    }
+
+    removeStopWords(words: string[]) {
+        let len = words.length;
+        for (let i = 0; i < len; i++) {
+            stopwords.splice(stopwords.indexOf(words[i]), -1);
+        }
     }
 
     tokenizeAndStem(text: string, keepStops: boolean) {
@@ -14,7 +33,7 @@ class Stemmer {
         const len = tokens.length;
 
         if (keepStops) {
-            for (let i = 0; i < len; i++)
+            for (let i = 0; i < len; i++) 
                 stemmedTokens.push(this.stem(tokens[i]));
         } else {
             for (let i = 0; i < len; i++) {
@@ -22,6 +41,8 @@ class Stemmer {
                     stemmedTokens.push(this.stem(tokens[i]));
             }
         }
+
+        return stemmedTokens;
     }
 }
 
